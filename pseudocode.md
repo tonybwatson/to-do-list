@@ -56,7 +56,7 @@ Create a to-do list app
             ELSE display message saying "please enter a to-do list item"
 
         complete():
-            IF "complete" button on item pressed
+            IF "complete" button on item checked
             item: active becomes false
             
         delete():
@@ -86,22 +86,15 @@ Create a to-do list app
 
 
     
-## Items
- 
-### Model
-
-
-### View
-
-### Controller
-
-## Other Component 2
+## Item
  
 ### Model
 
 ### View
+render()
 
 ### Controller
+
     
 
 

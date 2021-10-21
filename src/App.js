@@ -1,7 +1,4 @@
-// import Footer from './components/Footer';
 import ToDoItem from './components/ToDoItem'
-// import Controller from './components/Controller'
-
 import React, { Component } from 'react'
 
 export default class App extends Component {
@@ -9,50 +6,77 @@ export default class App extends Component {
         super();
         this.state = {
             input: '',
-            itemArray: []
+            itemArray: [],
+            filterBy: "all"
         }
+        //this.changeFilter = this.changeFilter(this.bind)
     }
 
     getItem = (e) => {
         this.setState({ input: e.target.value })
-        console.log(this.state.input)
+        // console.log(this.state.input)
     }
 
     addToItemArray = () => {
         let { itemArray, input } = this.state;
         // itemArray.push(input)
-        console.log(itemArray)
-      
+
         this.setState({
-            itemArray: [...itemArray, input],
-            input: ''
+            itemArray: [...itemArray, {
+                id: Date.now(),
+                input: input,
+                completed: false,
+                deleted: false
+            }],
+            input: '',
+
         })
+        console.log(itemArray)
+    }
+
+    changeFilter = (e) => {
+        //console.log(e)
+        this.setState({filterBy: e.target.id });
     }
 
     render() {
+        let tempList = this.state.itemArray;  // all
+        // filter the todo array
+        // set 
+        if (this.state.filterBy === "completed") { // completed 
+            tempList = this.state.itemArray.filter(item => item.completed);
+        }
+        if (this.state.filterBy === 'active') {
+            tempList = this.state.itemArray.filter(item => !item.completed && !item.deleted);
+        }
         return (
             <div className="App bg-primary">
                 <h1 className="text-center m-4">To-Do List</h1>
                 <div className="container">
                     <div className="input-group mb-3">
                         <div className="input-group-prepend">
-                            <button className="btn btn-dark" 
-                            type="button" 
-                            onClick={this.addToItemArray}
+                            <button className="btn btn-dark"
+                                type="button"
+                                onClick={this.addToItemArray}
                             >Add to list</button>
                         </div>
-                        <input type="text" 
-                        className="form-control" 
-                        placeholder="" 
-                        aria-label="" 
-                        aria-describedby="basic-addon1"
-                            onChange={this.getItem} 
+                        <input type="text"
+                            className="form-control"
+                            placeholder=""
+                            aria-label=""
+                            aria-describedby="basic-addon1"
+                            onChange={this.getItem}
                             value={this.state.input}
                         />
                     </div>
 
                     <ul className="list-group">
-                        {this.state.itemArray.map((currentToDo, index) => <ToDoItem key={index} currentToDo={currentToDo}/>)}
+                        {tempList.map((currentToDo, index) => <ToDoItem
+                            key={index}
+                            currentToDo={currentToDo}
+                            allToDos={this.state.itemArray}
+                        // handleComplete={this.handleComplete}
+                        />)}
                     </ul>
 
                     <div className="container mt-4 d-flex justify-content-center">
@@ -62,43 +86,52 @@ export default class App extends Component {
                     </div>
                             <div className="col-8">
                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn btn-dark">All</button>
-                                    <button type="button" className="btn btn-dark">Completed</button>
-                                    <button type="button" className="btn btn-dark">Active</button>
+                                    <button type="button" className="btn btn-dark" id="all" onClick={this.changeFilter}>All</button>
+                                    <button type="button" className="btn btn-dark" id="completed" onClick={this.changeFilter}>Completed</button>
+                                    <button type="button" className="btn btn-dark" id="active" onClick={this.changeFilter}>Active</button>
                                 </div>
                             </div>
                             <div className="col-2">
                             </div>
                         </div>
-                        <div className="row text-center p-4"><p># of Items:</p></div>
+                        <div className="row text-center ml-4 mt-1"><p># of Items: {this.state.itemArray.length}</p></div>
                     </div>
                 </div>
             </div >
         )
     }
 
+    // itemDeleted() {
+    //     if (this.state.itemArray.deleted) {
+    //         console.log(this.state.itemArray)
+
+    //     }
+    // }
+
+    // filterDelete() {
+
+    // }
+
+    // filterAll() {
+
+    // }
+
     componentDidMount() {
         console.log("App loaded!")
+        // if (this.itemArray !== 0) {
+        //     // console.log("there's some stuff in the array")
+        // }
     }
 
     componentDidUpdate() {
         console.log('App updated!')
-          localStorage.setItem('itemArray', JSON.stringify(this.state.itemArray))
-        // this.render()
+        localStorage.setItem('itemArray', JSON.stringify(this.state.itemArray))
+
     }
 
+    updateFilterByStatus(status) {
+        this.setState({
 
-    //     filterByComplete() {
-
-    //     }
-
-    //     filterByActive() {
-
-    //     }
-
-    //     filterShowAll() {
-
-    //     }
-
-
+        })
+    }
 }
