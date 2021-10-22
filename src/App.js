@@ -7,21 +7,21 @@ export default class App extends Component {
         this.state = {
             input: '',
             itemArray: [],
-            filterBy: "all",
+            filterBy: "active",
             count: 0
         }
     }
 
     componentDidMount() {
-        let oldStuff = JSON.parse(localStorage.getItem('itemArray'))
+        let oldStuff = JSON.parse(localStorage.getItem("itemArray"))
         if (oldStuff) {
             this.setState({ itemArray: oldStuff })
         }
     }
 
     componentDidUpdate() {
-        // console.log('App updated!')
-        localStorage.setItem('itemArray', JSON.stringify(this.state.itemArray))
+        // console.log("App updated!")
+        localStorage.setItem("itemArray", JSON.stringify(this.state.itemArray))
     }
 
     getItem = (e) => {
@@ -57,7 +57,6 @@ export default class App extends Component {
                 item.deleted = true
             }
             this.setState({ count: this.state.count-1 })
-            this.setState.count = this.setState.count--
             return item
         })
         // this.currentToDo.deleted = !props.currentToDo.deleted
@@ -77,19 +76,22 @@ export default class App extends Component {
     }
 
     handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === "Enter") {
             this.addToItemArray()
         }
     }
 
     render() {
-        let tempList = this.state.itemArray.filter(item => !item.deleted);  // all
+        let tempList = this.state.itemArray.filter(item => item);  // all
 
         if (this.state.filterBy === "completed") {
             tempList = tempList.filter(item => item.completed);
         }
-        if (this.state.filterBy === 'active') {
-            tempList = tempList.filter(item => !item.completed);
+        if (this.state.filterBy === "active") {
+            tempList = tempList.filter(item => !item.completed && !item.deleted);
+        }
+        if (this.state.filterBy === "deleted") {
+            tempList = tempList.filter(item => item.deleted);
         }
         return (
             <div className="App bg-dark">
@@ -147,15 +149,19 @@ export default class App extends Component {
                                         className="btn btn-dark border-info"
                                         id="all"
                                         onClick={this.changeFilter}>All</button>
+                                    <button type="button"
+                                        className="btn btn-dark border-info"
+                                        id="active"
+                                        onClick={this.changeFilter}>Active</button>
                                     <button
                                         type="button"
                                         className="btn btn-dark border-info"
                                         id="completed"
                                         onClick={this.changeFilter}>Completed</button>
-                                    <button type="button"
+                                        <button type="button"
                                         className="btn btn-dark border-info"
-                                        id="active"
-                                        onClick={this.changeFilter}>Active</button>
+                                        id="deleted"
+                                        onClick={this.changeFilter}>Deleted</button>
                                 </div>
                             </div>
                         </div>
