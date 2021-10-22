@@ -7,7 +7,8 @@ export default class App extends Component {
         this.state = {
             input: '',
             itemArray: [],
-            filterBy: "all"
+            filterBy: "all",
+            count: 0
         }
     }
 
@@ -36,9 +37,10 @@ export default class App extends Component {
                     id: Date.now(),
                     input: input,
                     completed: false,
-                    deleted: false
+                    deleted: false,
                 }],
                 input: '',
+                count: this.state.count+1
 
             })
             // console.log(itemArray)
@@ -54,6 +56,8 @@ export default class App extends Component {
             if (item.id === id) {
                 item.deleted = true
             }
+            this.setState({ count: this.state.count-1 })
+            this.setState.count = this.setState.count--
             return item
         })
         // this.currentToDo.deleted = !props.currentToDo.deleted
@@ -157,8 +161,7 @@ export default class App extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="row text-center ml-4 mt-1"><p>Total Items: {this.state.itemArray.length}</p></div>
-                {/* <button type="button" class="btn btn-dark" oncClick={this.completeAll}>Button</button> */}
+                <div className="row text-center ml-4 mt-1"><p>Total Items: {this.state.count}</p></div>
             </div >
         )
     }
