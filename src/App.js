@@ -9,7 +9,18 @@ export default class App extends Component {
             itemArray: [],
             filterBy: "all"
         }
-        //this.changeFilter = this.changeFilter(this.bind)
+    }
+
+    componentDidMount() {
+        let oldStuff = JSON.parse(localStorage.getItem('itemArray'))
+        if (oldStuff) {
+            this.setState({ itemArray: oldStuff })
+        }
+    }
+
+    componentDidUpdate() {
+        // console.log('App updated!')
+        localStorage.setItem('itemArray', JSON.stringify(this.state.itemArray))
     }
 
     getItem = (e) => {
@@ -19,119 +30,136 @@ export default class App extends Component {
 
     addToItemArray = () => {
         let { itemArray, input } = this.state;
-        // itemArray.push(input)
+        if (input.length > 0) {
+            this.setState({
+                itemArray: [...itemArray, {
+                    id: Date.now(),
+                    input: input,
+                    completed: false,
+                    deleted: false
+                }],
+                input: '',
 
-        this.setState({
-            itemArray: [...itemArray, {
-                id: Date.now(),
-                input: input,
-                completed: false,
-                deleted: false
-            }],
-            input: '',
-
-        })
-        console.log(itemArray)
+            })
+            // console.log(itemArray)
+        }
     }
 
     changeFilter = (e) => {
-        //console.log(e)
-        this.setState({filterBy: e.target.id });
+        this.setState({ filterBy: e.target.id });
+    }
+
+    handleDelete = (id) => {
+        let newArray = this.state.itemArray.map((item) => {
+            if (item.id === id) {
+                item.deleted = true
+            }
+            return item
+        })
+        // this.currentToDo.deleted = !props.currentToDo.deleted
+        // props.currentToDo.completed = false
+        this.setState({ itemArray: newArray })
+    }
+
+    handleComplete = (id) => {
+        let newArray = this.state.itemArray.map((item) => {
+            if (item.id === id) {
+                item.completed = !item.completed
+            }
+            return item
+        })
+        // props.currentToDo.completed = !props.currentToDo.completed
+        this.setState({ itemArray: newArray })
+    }
+
+    handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            this.addToItemArray()
+        }
     }
 
     render() {
-        let tempList = this.state.itemArray;  // all
-        // filter the todo array
-        // set 
-        if (this.state.filterBy === "completed") { // completed 
-            tempList = this.state.itemArray.filter(item => item.completed);
+        let tempList = this.state.itemArray.filter(item => !item.deleted);  // all
+
+        if (this.state.filterBy === "completed") {
+            tempList = tempList.filter(item => item.completed);
         }
         if (this.state.filterBy === 'active') {
-            tempList = this.state.itemArray.filter(item => !item.completed && !item.deleted);
+            tempList = tempList.filter(item => !item.completed);
         }
         return (
-            <div className="App bg-primary">
+            <div className="App bg-dark">
                 <h1 className="text-center m-4">To-Do List</h1>
                 <div className="container">
                     <div className="input-group mb-3">
                         <div className="input-group-prepend">
-                            <button className="btn btn-dark"
+                            <button className="btn btn-dark border-info"
                                 type="button"
                                 onClick={this.addToItemArray}
                             >Add to list</button>
                         </div>
                         <input type="text"
-                            className="form-control"
-                            placeholder=""
+                            className="form-control border-info text-white bg-secondary"
+                            placeholder="Enter a To-Do item..."
                             aria-label=""
                             aria-describedby="basic-addon1"
                             onChange={this.getItem}
                             value={this.state.input}
+                            onKeyDown={this.handleKeyDown}
                         />
                     </div>
 
-                    <ul className="list-group">
-                        {tempList.map((currentToDo, index) => <ToDoItem
-                            key={index}
-                            currentToDo={currentToDo}
-                            allToDos={this.state.itemArray}
-                        // handleComplete={this.handleComplete}
-                        />)}
-                    </ul>
-
-                    <div className="container mt-4 d-flex justify-content-center">
-                        <div className="footer row">
-                            <div className="col-2 mt-1">
-                                Show:
-                    </div>
-                            <div className="col-8">
-                                <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn btn-dark" id="all" onClick={this.changeFilter}>All</button>
-                                    <button type="button" className="btn btn-dark" id="completed" onClick={this.changeFilter}>Completed</button>
-                                    <button type="button" className="btn btn-dark" id="active" onClick={this.changeFilter}>Active</button>
+                    <ul className="list-group border-info">
+                        <li className="list-group-item border-info text-white bg-secondary">
+                            <div className="container">
+                                <div className="row">
+                                    <div className="col-3 text-start border-right">
+                                        <span className="border-right">Complete?</span>
+                                    </div>
+                                    <div className="col-5"></div>
+                                    <div className="col-4 text-end">Delete</div>
                                 </div>
                             </div>
-                            <div className="col-2">
+                        </li>
+                        {tempList.map((currentToDo, index) =>
+                            <ToDoItem
+                                key={index}
+                                currentToDo={currentToDo}
+                                allToDos={this.state.itemArray}
+                                handleDelete={this.handleDelete}
+                                handleComplete={this.handleComplete}
+                            />)}
+                    </ul>
+
+                    <div className="row">
+                        <div className="col-12 text-center mt-4">View:</div>
+                    </div>
+
+                    <div className="container d-flex justify-content-center">
+                        <div className="row">
+                            <div className="col-12">
+                                <div className="btn-group border-info" role="group" aria-label="Basic example">
+                                    <button type="button"
+                                        className="btn btn-dark border-info"
+                                        id="all"
+                                        onClick={this.changeFilter}>All</button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-dark border-info"
+                                        id="completed"
+                                        onClick={this.changeFilter}>Completed</button>
+                                    <button type="button"
+                                        className="btn btn-dark border-info"
+                                        id="active"
+                                        onClick={this.changeFilter}>Active</button>
+                                </div>
                             </div>
                         </div>
-                        <div className="row text-center ml-4 mt-1"><p># of Items: {this.state.itemArray.length}</p></div>
                     </div>
                 </div>
+                <div className="row text-center ml-4 mt-1"><p>Total Items: {this.state.itemArray.length}</p></div>
+                {/* <button type="button" class="btn btn-dark" oncClick={this.completeAll}>Button</button> */}
             </div >
         )
-    }
-
-    // itemDeleted() {
-    //     if (this.state.itemArray.deleted) {
-    //         console.log(this.state.itemArray)
-
-    //     }
-    // }
-
-    // filterDelete() {
-
-    // }
-
-    // filterAll() {
-
-    // }
-
-    componentDidMount() {
-        console.log("App loaded!")
-        // if (this.itemArray !== 0) {
-        //     // console.log("there's some stuff in the array")
-        // }
-    }
-
-    componentDidUpdate() {
-        console.log('App updated!')
-        localStorage.setItem('itemArray', JSON.stringify(this.state.itemArray))
-
-    }
-
-    updateFilterByStatus(status) {
-        this.setState({
-
-        })
     }
 }
