@@ -2,7 +2,7 @@
 import React from 'react'
 
 export default function ToDoItem(props) {
-    console.log(props)
+    console.log(props.currentToDo.completed)
 
 
     return (
@@ -11,7 +11,10 @@ export default function ToDoItem(props) {
                 type="checkbox"
                 aria-label="Checkbox for following text input"
                 onChange={() => props.handleComplete(props.currentToDo.id)}
-            />{props.currentToDo.input}
+            />{props.currentToDo.completed
+                    ? (<strike>{props.currentToDo.input}</strike>)
+                    : (props.currentToDo.input)
+                }
             <button className="m-2 float-end btn btn-dark btn-sm" 
                 type="button"
                 onClick={() => props.handleDelete(props.currentToDo.id)}>x</button>
